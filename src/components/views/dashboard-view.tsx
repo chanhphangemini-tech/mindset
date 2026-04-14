@@ -5,9 +5,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useAppStore } from '@/store/app-store'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Flame,
   BookOpen,
@@ -29,40 +28,46 @@ import type { SkillPath, DailyChallenge, Module, Lesson } from '@/types'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 
-// ─── Color Maps ───────────────────────────────────────────────
+// ─── Neo-Brutalist Design Tokens ───────────────────────────────
 
-const colorMap: Record<string, { bg: string; text: string; border: string; iconBg: string; progress: string; cardHover: string }> = {
+const NB = {
+  card: 'border-4 border-black shadow-[inset_-4px_-4px_0_#000,inset_4px_4px_0_#fff]',
+  cardHover: 'hover:shadow-[inset_-6px_-6px_0_#000,inset_6px_6px_0_#fff]',
+  button: 'border-4 border-black shadow-[4px_4px_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000]',
+  iconBox: 'border-[3px] border-black shadow-[inset_-2px_-2px_0_#000,inset_2px_2px_0_#fff]',
+  badge: 'border-[3px] border-black shadow-[2px_2px_0_#000]',
+  progressTrack: 'bg-white border-[3px] border-black',
+  progressFill: 'bg-[#e11d48]',
+  cardBg: 'bg-[#fef3c7]',
+  pageBg: 'bg-[#fde047]',
+}
+
+// ─── Color Maps (Solid Backgrounds) ────────────────────────────
+
+const colorMap: Record<string, { text: string; iconBg: string; progress: string; solidBg: string }> = {
   emerald: {
-    bg: 'bg-emerald-500/5',
-    text: 'text-emerald-700 dark:text-emerald-300',
-    border: 'border-emerald-500/20 hover:border-emerald-500/40',
-    iconBg: 'bg-emerald-500/10',
-    progress: 'bg-emerald-500',
-    cardHover: 'hover:border-emerald-500/40',
+    text: 'text-[#10b981]',
+    iconBg: 'bg-[#10b981]',
+    progress: 'bg-[#10b981]',
+    solidBg: 'bg-[#10b981]',
   },
   amber: {
-    bg: 'bg-amber-500/5',
-    text: 'text-amber-700 dark:text-amber-300',
-    border: 'border-amber-500/20 hover:border-amber-500/40',
-    iconBg: 'bg-amber-500/10',
-    progress: 'bg-amber-500',
-    cardHover: 'hover:border-amber-500/40',
+    text: 'text-[#f59e0b]',
+    iconBg: 'bg-[#f59e0b]',
+    progress: 'bg-[#f59e0b]',
+    solidBg: 'bg-[#f59e0b]',
   },
   violet: {
-    bg: 'bg-violet-500/5',
-    text: 'text-violet-700 dark:text-violet-300',
-    border: 'border-violet-500/20 hover:border-violet-500/40',
-    iconBg: 'bg-violet-500/10',
-    progress: 'bg-violet-500',
-    cardHover: 'hover:border-violet-500/40',
+    text: 'text-[#8b5cf6]',
+    iconBg: 'bg-[#8b5cf6]',
+    progress: 'bg-[#8b5cf6]',
+    solidBg: 'bg-[#8b5cf6]',
   },
   rose: {
-    bg: 'bg-rose-500/5',
-    text: 'text-rose-700 dark:text-rose-300',
-    border: 'border-rose-500/20 hover:border-rose-500/40',
-    iconBg: 'bg-rose-500/10',
-    progress: 'bg-rose-500',
-    cardHover: 'hover:border-rose-500/40',
+    text: 'text-[#e11d48]',
+    iconBg: 'bg-[#e11d48]',
+    progress: 'bg-[#e11d48]',
+    solidBg: 'bg-[#e11d48]',
   },
 }
 
@@ -74,39 +79,52 @@ const workflowSteps = [
   {
     step: 1,
     icon: GraduationCap,
-    title: 'Chọn lộ trình',
-    desc: '4 kỹ năng tư duy cốt lõi',
-    color: 'bg-emerald-500',
+    title: 'Chon lo trinh',
+    desc: '4 ky nang tu duy cot loi',
+    color: 'bg-[#10b981]',
   },
   {
     step: 2,
     icon: Layers,
-    title: 'Chọn Module',
-    desc: 'Module từ cơ bản đến nâng cao',
-    color: 'bg-amber-500',
+    title: 'Chon Module',
+    desc: 'Module tu co ban den nang cao',
+    color: 'bg-[#f59e0b]',
   },
   {
     step: 3,
     icon: BookOpen,
-    title: 'Học bài',
-    desc: 'Đọc lý thuyết & ví dụ thực tế',
-    color: 'bg-violet-500',
+    title: 'Hoc bai',
+    desc: 'Doc ly thuyet & vi du thuc te',
+    color: 'bg-[#8b5cf6]',
   },
   {
     step: 4,
     icon: PencilLine,
-    title: 'Làm Quiz',
-    desc: 'Kiểm tra & củng cố kiến thức',
-    color: 'bg-rose-500',
+    title: 'Lam Quiz',
+    desc: 'Kiem tra & cuong co kien thuc',
+    color: 'bg-[#e11d48]',
   },
   {
     step: 5,
     icon: Medal,
-    title: 'Nhận XP & Huy hiệu',
-    desc: 'Leo level & mở khóa thành tựu',
-    color: 'bg-gradient-to-r from-emerald-500 via-amber-500 to-violet-500',
+    title: 'Nhan XP & Huy hieu',
+    desc: 'Leo level & mo khoa thanh tuu',
+    color: 'bg-[#10b981]',
   },
 ]
+
+// ─── Neo-Brutalist Progress Bar ───────────────────────────────
+
+function NeoProgress({ value, className }: { value: number; className?: string }) {
+  return (
+    <div className={cn('h-3 w-full overflow-hidden', NB.progressTrack, className)}>
+      <div
+        className={cn('h-full transition-all duration-300', NB.progressFill)}
+        style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
+      />
+    </div>
+  )
+}
 
 // ─── Main Component ───────────────────────────────────────────
 
@@ -134,27 +152,33 @@ export function DashboardView() {
     ?.find((l) => !completedLessons.includes(l.id))
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* ── Welcome ── */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Chao mung den MindForge 👋
+      <div className="border-4 border-black bg-[#fef3c7] p-5 shadow-[4px_4px_0_#000]">
+        <h1
+          className="text-[15px] font-bold tracking-tight leading-snug"
+          style={{ fontFamily: "'Press Start 2P', monospace" }}
+        >
+          Chao mung den MindForge
         </h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="mt-2 text-[11px] text-black/70 leading-relaxed">
           Tiep tuc hanh trinh phat trien tu duy cua ban
         </p>
       </div>
 
       {/* ── Learning Workflow ── */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-muted/50 to-muted/30">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Zap className="h-4 w-4 text-amber-500" />
+        <div className={cn('bg-[#fef3c7]', NB.card)}>
+          <div className="p-4 pb-2 sm:p-6 sm:pb-2">
+            <h3
+              className="text-[13px] font-bold flex items-center gap-2"
+              style={{ fontFamily: "'Press Start 2P', monospace" }}
+            >
+              <Zap className="h-4 w-4 text-[#f59e0b]" />
               Quy trinh hoc tap
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+            </h3>
+          </div>
+          <div className="p-4 pt-0 sm:p-6 sm:pt-0">
             <div className="grid grid-cols-5 gap-2 sm:gap-3">
               {workflowSteps.map((ws, i) => {
                 const Icon = ws.icon
@@ -162,44 +186,47 @@ export function DashboardView() {
                   <div key={ws.step} className="relative flex flex-col items-center text-center">
                     {/* Connector line */}
                     {i < workflowSteps.length - 1 && (
-                      <div className="absolute top-5 left-[calc(50%+18px)] right-[calc(-50%+18px)] h-0.5 bg-border hidden sm:block" />
+                      <div className="absolute top-5 left-[calc(50%+18px)] right-[calc(-50%+18px)] h-[3px] bg-black hidden sm:block" />
                     )}
                     <div
                       className={cn(
-                        'relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-white shadow-md',
-                        ws.color
+                        'relative z-10 flex h-10 w-10 items-center justify-center text-white',
+                        ws.color,
+                        NB.iconBox
                       )}
                     >
-                      <Icon className="h-4.5 w-4.5" />
+                      <Icon className="h-4 w-4" />
                     </div>
-                    <p className="mt-2 text-xs font-semibold leading-tight">{ws.title}</p>
-                    <p className="mt-0.5 text-[10px] text-muted-foreground leading-tight hidden sm:block">
+                    <p className="mt-2 text-[10px] font-bold leading-tight" style={{ fontFamily: "'Press Start 2P', monospace" }}>
+                      {ws.title}
+                    </p>
+                    <p className="mt-1 text-[10px] text-black/60 leading-tight hidden sm:block">
                       {ws.desc}
                     </p>
                   </div>
                 )
               })}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </motion.div>
 
       {/* ── Continue Learning ── */}
       {nextLesson && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <Card className="border-0 shadow-sm bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5">
-            <CardContent className="p-4 sm:p-5">
+          <div className={cn('bg-[#fef3c7]', NB.card)}>
+            <div className="p-4 sm:p-5">
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 shrink-0">
-                  <BookOpen className="h-6 w-6 text-primary" />
+                <div className="flex h-12 w-12 items-center justify-center bg-[#e11d48] text-white shrink-0 border-[3px] border-black">
+                  <BookOpen className="h-6 w-6" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <p className="text-[10px] font-bold text-black/60 uppercase tracking-wider" style={{ fontFamily: "'Press Start 2P', monospace" }}>
                     Tiep tuc hoc
                   </p>
-                  <p className="text-sm font-bold mt-0.5 truncate">{nextLesson.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                    {nextLesson.module.skillPath.title} › {nextLesson.module.title}
+                  <p className="text-sm font-bold mt-1 truncate">{nextLesson.title}</p>
+                  <p className="text-[11px] text-black/60 mt-0.5 truncate">
+                    {nextLesson.module.skillPath.title} &rsaquo; {nextLesson.module.title}
                   </p>
                 </div>
                 <Button
@@ -210,15 +237,15 @@ export function DashboardView() {
                       nextLesson.id
                     )
                   }
-                  className="gap-2 shrink-0"
+                  className={cn('gap-2 shrink-0 bg-[#e11d48] text-white font-bold text-xs', NB.button)}
                   size="sm"
                 >
                   Hoc ngay
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
       )}
 
@@ -236,73 +263,87 @@ export function DashboardView() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.04 }}
           >
-            <Card className="border-0 shadow-sm">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className={cn('flex h-8 w-8 items-center justify-center rounded-lg', colorMap[stat.color].iconBg)}>
-                    <stat.icon className={cn('h-4 w-4', colorMap[stat.color].text)} />
+            <div className={cn('bg-[#fef3c7]', NB.card)}>
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <div
+                    className={cn(
+                      'flex h-8 w-8 items-center justify-center text-white border-[3px] border-black',
+                      colorMap[stat.color].iconBg
+                    )}
+                  >
+                    <stat.icon className="h-4 w-4" />
                   </div>
                 </div>
-                <p className="text-2xl font-bold">{stat.value}</p>
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
-              </CardContent>
-            </Card>
+                <p className="text-xl font-bold" style={{ fontFamily: "'Press Start 2P', monospace" }}>
+                  {stat.value}
+                </p>
+                <p className="text-[10px] text-black/60 mt-1">{stat.label}</p>
+              </div>
+            </div>
           </motion.div>
         ))}
       </div>
 
       {/* ── Overall Progress ── */}
-      <Card className="border-0 shadow-sm">
-        <CardContent className="p-4 sm:p-6">
+      <div className={cn('bg-[#fef3c7]', NB.card)}>
+        <div className="p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold">Tien do tong quan</h3>
-            <span className="text-sm font-medium text-muted-foreground">{overallProgress}%</span>
+            <h3 className="text-[13px] font-bold" style={{ fontFamily: "'Press Start 2P', monospace" }}>
+              Tien do tong quan
+            </h3>
+            <span className="text-sm font-bold text-black">{overallProgress}%</span>
           </div>
-          <Progress value={overallProgress} className="h-2.5" />
-          <p className="text-xs text-muted-foreground mt-2">
+          <NeoProgress value={overallProgress} />
+          <p className="text-[10px] text-black/60 mt-2">
             {completedLessons.length} / {totalLessons} bai hoc hoan thanh
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* ── Daily Challenge ── */}
       {dailyChallenge && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          <Card className="border-0 shadow-sm bg-gradient-to-r from-emerald-500/5 via-amber-500/5 to-violet-500/5">
-            <CardHeader className="pb-2">
+          <div className={cn('bg-[#fef3c7]', NB.card)}>
+            <div className="p-4 pb-2 sm:p-6 sm:pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-amber-500" />
+                <h3
+                  className="text-[13px] font-bold flex items-center gap-2"
+                  style={{ fontFamily: "'Press Start 2P', monospace" }}
+                >
+                  <Zap className="h-4 w-4 text-[#f59e0b]" />
                   Thach thuc hom nay
-                </CardTitle>
-                <Badge variant="secondary" className="text-xs">
+                </h3>
+                <Badge className={cn('text-[10px] bg-[#f59e0b] text-white font-bold', NB.badge)}>
                   +{dailyChallenge.xpReward} XP
                 </Badge>
               </div>
-            </CardHeader>
-            <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-              <p className="font-medium text-sm">{dailyChallenge.title}</p>
-              <p className="text-sm text-muted-foreground mt-1">{dailyChallenge.description}</p>
-              <Badge variant="outline" className="mt-3 text-xs capitalize">
+            </div>
+            <div className="p-4 pt-0 sm:p-6 sm:pt-0">
+              <p className="font-bold text-sm">{dailyChallenge.title}</p>
+              <p className="text-[11px] text-black/60 mt-1 leading-relaxed">{dailyChallenge.description}</p>
+              <Badge className={cn('mt-3 text-[10px] capitalize font-bold bg-white', NB.badge)}>
                 {dailyChallenge.challengeType === 'reflection'
                   ? 'Phan tu'
                   : dailyChallenge.challengeType === 'quiz'
                     ? 'Trac nghiem'
                     : 'Tinh huong'}
               </Badge>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
       )}
 
       {/* ── Skill Paths with Module Selection ── */}
       <div>
-        <h3 className="text-lg font-semibold mb-4">Lo trinh hoc</h3>
+        <h3 className="text-[13px] font-bold mb-4" style={{ fontFamily: "'Press Start 2P', monospace" }}>
+          Lo trinh hoc
+        </h3>
 
         {loadingPaths ? (
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-20 rounded-xl" />
+              <Skeleton key={i} className="h-20 border-4 border-black" />
             ))}
           </div>
         ) : (
@@ -322,46 +363,60 @@ export function DashboardView() {
 
       {/* ── Quick Actions ── */}
       <div>
-        <h3 className="text-lg font-semibold mb-4">Hanh dong nhanh</h3>
+        <h3 className="text-[13px] font-bold mb-4" style={{ fontFamily: "'Press Start 2P', monospace" }}>
+          Hanh dong nhanh
+        </h3>
         <div className="grid gap-3 sm:grid-cols-3">
           {[
             {
               icon: Bot,
               title: 'Hoc cung AI',
               desc: 'Chat voi tro ly AI',
-              color: 'bg-violet-500/10',
+              color: 'bg-[#8b5cf6]',
               action: () => setView('ai-practice'),
             },
             {
               icon: Trophy,
               title: 'Thanh tich',
               desc: 'Xem huy hieu da dat',
-              color: 'bg-amber-500/10',
+              color: 'bg-[#f59e0b]',
               action: () => setView('progress'),
             },
             {
               icon: StickyNote,
               title: 'Ghi chu',
               desc: 'Quan ly ghi chu hoc tap',
-              color: 'bg-emerald-500/10',
+              color: 'bg-[#10b981]',
               action: () => setView('notes'),
             },
           ].map((item) => (
-            <Card
+            <motion.div
               key={item.title}
-              className="cursor-pointer border-0 shadow-sm hover:shadow-md transition-all duration-200"
-              onClick={item.action}
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.15 }}
             >
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className={cn('flex h-10 w-10 items-center justify-center rounded-xl', item.color)}>
-                  <item.icon className="h-5 w-5" />
+              <div
+                className={cn(
+                  'bg-[#fef3c7] cursor-pointer transition-shadow duration-200',
+                  NB.card,
+                  NB.cardHover
+                )}
+                onClick={item.action}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') item.action() }}
+              >
+                <div className="p-4 flex items-center gap-3">
+                  <div className={cn('flex h-10 w-10 items-center justify-center text-white border-[3px] border-black', item.color)}>
+                    <item.icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">{item.title}</p>
+                    <p className="text-[10px] text-black/60">{item.desc}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-semibold">{item.title}</p>
-                  <p className="text-xs text-muted-foreground">{item.desc}</p>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -399,32 +454,32 @@ function SkillPathCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 + 0.2 }}
     >
-      <Card className={cn('border transition-all duration-200 shadow-sm overflow-hidden', c.border)}>
+      <div className={cn('bg-[#fef3c7] transition-shadow duration-200 overflow-hidden', NB.card, NB.cardHover)}>
         {/* Header row — always visible */}
         <button
           onClick={onToggle}
-          className="w-full text-left p-4 sm:p-5 flex items-start gap-3 hover:bg-muted/30 transition-colors"
+          className="w-full text-left p-4 sm:p-5 flex items-start gap-3 hover:bg-black/5 transition-colors"
         >
           <div
             className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-xl text-lg shrink-0',
+              'flex h-10 w-10 items-center justify-center text-lg text-white shrink-0 border-[3px] border-black',
               c.iconBg
             )}
           >
             {skillPath.icon}
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-sm leading-tight">{skillPath.title}</h4>
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{skillPath.description}</p>
+            <h4 className="font-bold text-sm leading-tight">{skillPath.title}</h4>
+            <p className="text-[10px] text-black/60 mt-1 line-clamp-2">{skillPath.description}</p>
             <div className="flex items-center gap-3 mt-3">
-              <Progress value={pathProgress} className="h-1.5 flex-1" />
-              <span className="text-xs text-muted-foreground shrink-0">{pathProgress}%</span>
+              <NeoProgress value={pathProgress} className="h-2 flex-1" />
+              <span className="text-[10px] font-bold text-black shrink-0">{pathProgress}%</span>
             </div>
-            <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 mt-2 text-[10px] text-black/60">
               <span>{skillPath.modules.length} module</span>
-              <span>•</span>
+              <span>&bull;</span>
               <span>{totalLessonsInPath} bai hoc</span>
-              <span>•</span>
+              <span>&bull;</span>
               <span>
                 {completedInPath}/{totalLessonsInPath} da xong
               </span>
@@ -432,7 +487,7 @@ function SkillPathCard({
           </div>
           <ChevronDown
             className={cn(
-              'h-4 w-4 text-muted-foreground shrink-0 mt-1 transition-transform duration-200',
+              'h-4 w-4 text-black shrink-0 mt-1 transition-transform duration-200',
               isExpanded && 'rotate-180'
             )}
           />
@@ -448,8 +503,8 @@ function SkillPathCard({
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="border-t px-4 sm:px-5 pb-4 pt-3 space-y-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="border-t-4 border-black px-4 sm:px-5 pb-4 pt-3 space-y-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-black/60">
                   Chon module de bat dau hoc
                 </p>
                 {skillPath.modules.map((mod, modIdx) => (
@@ -465,7 +520,7 @@ function SkillPathCard({
             </motion.div>
           )}
         </AnimatePresence>
-      </Card>
+      </div>
     </motion.div>
   )
 }
@@ -497,17 +552,17 @@ function ModuleBlock({
       <div className="flex items-center gap-2.5">
         <div
           className={cn(
-            'flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold shrink-0',
-            isModuleComplete ? 'bg-emerald-500 text-white' : c.iconBg + ' ' + c.text
+            'flex h-7 w-7 items-center justify-center text-xs font-bold shrink-0 border-[3px] border-black text-white',
+            isModuleComplete ? 'bg-[#10b981]' : c.iconBg
           )}
         >
           {isModuleComplete ? <CheckCircle2 className="h-3.5 w-3.5" /> : moduleIndex + 1}
         </div>
         <div className="flex-1 min-w-0">
-          <h5 className="text-sm font-medium">{module.title}</h5>
-          <p className="text-[11px] text-muted-foreground line-clamp-1">{module.description}</p>
+          <h5 className="text-sm font-bold">{module.title}</h5>
+          <p className="text-[10px] text-black/60 line-clamp-1">{module.description}</p>
         </div>
-        <span className={cn('text-xs font-medium shrink-0', c.text)}>{moduleProgress}%</span>
+        <span className={cn('text-xs font-bold shrink-0', c.text)}>{moduleProgress}%</span>
       </div>
 
       {/* Lessons list */}
@@ -519,34 +574,32 @@ function ModuleBlock({
               key={lesson.id}
               onClick={() => navigateToLesson(skillPathId, module.id, lesson.id)}
               className={cn(
-                'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-all duration-200 hover:bg-muted',
-                isCompleted && 'bg-muted/50'
+                'flex w-full items-center gap-2.5 border-[3px] border-black px-3 py-2 text-left text-xs transition-all duration-200 hover:bg-black/5',
+                isCompleted ? 'bg-white' : 'bg-[#fef3c7]'
               )}
             >
               <div
                 className={cn(
-                  'flex h-6 w-6 items-center justify-center rounded-full shrink-0 text-xs',
-                  isCompleted
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-muted text-muted-foreground'
+                  'flex h-6 w-6 items-center justify-center shrink-0 text-xs border-[3px] border-black text-white',
+                  isCompleted ? 'bg-[#10b981]' : 'bg-black/20'
                 )}
               >
                 {isCompleted ? <CheckCircle2 className="h-3 w-3" /> : <BookOpen className="h-3 w-3" />}
               </div>
               <div className="flex-1 min-w-0">
-                <p className={cn('font-medium text-xs truncate', isCompleted && 'text-muted-foreground')}>
+                <p className={cn('font-bold text-xs truncate', isCompleted && 'text-black/60')}>
                   {lesson.title}
                 </p>
-                <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-muted-foreground">
+                <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-black/60">
                   <span className="flex items-center gap-0.5">
                     <Clock className="h-2.5 w-2.5" />
                     {lesson.estimatedMinutes}p
                   </span>
-                  <span>•</span>
+                  <span>&bull;</span>
                   <span>{lesson.quizzes.length} quiz</span>
                 </div>
               </div>
-              {!isCompleted && <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0" />}
+              {!isCompleted && <ChevronRight className="h-3 w-3 text-black/60 shrink-0" />}
             </button>
           )
         })}

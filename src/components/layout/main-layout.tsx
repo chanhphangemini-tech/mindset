@@ -2,12 +2,12 @@
 
 import { useAppStore } from '@/store/app-store'
 import { Sidebar } from '@/components/layout/sidebar'
-import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
-import { Menu, Flame, Sun, Moon, ArrowLeft } from 'lucide-react'
+import { Menu, Flame, ArrowLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
+import React from 'react'
 
 const viewTitles: Record<string, string> = {
   dashboard: 'Dashboard',
@@ -35,50 +35,57 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     toggleSidebar,
     setView,
   } = useAppStore()
-  const { theme, setTheme } = useTheme()
-
-  const [mounted, setMounted] = React.useState(false)
-  React.useEffect(() => setMounted(true), [])
 
   const randomQuote = motivationalQuotes[Math.floor(Date.now() / 86400000) % motivationalQuotes.length]
 
   const showBackButton = currentView === 'lesson' || (currentView === 'skill-path' && currentSkillPathId)
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#fde047]">
       {/* Mobile header */}
-      <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 lg:hidden">
-        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="shrink-0">
-          <Menu className="h-5 w-5" />
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b-[4px] border-b-black bg-[#fef3c7] px-4 lg:hidden">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleSidebar}
+          className="shrink-0 border-[3px] border-black shadow-[4px_4px_0_#000] hover:shadow-[2px_2px_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] bg-[#fef3c7] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all duration-100"
+        >
+          <Menu className="h-5 w-5 text-black" />
           <span className="sr-only">Mở menu</span>
         </Button>
-        <h2 className="text-sm font-semibold truncate">
+        <h2 className="text-[11px] font-bold truncate text-black" style={{ fontFamily: "'Press Start 2P', monospace" }}>
           {viewTitles[currentView] ?? 'MindForge'}
         </h2>
         {userStats && userStats.currentStreak > 0 && (
-          <div className="ml-auto flex items-center gap-1 text-sm">
-            <Flame className="h-4 w-4 text-orange-500" />
-            <span className="font-medium">{userStats.currentStreak} ngày</span>
+          <div className="ml-auto flex items-center gap-1 border-[3px] border-black bg-[#f59e0b] px-2 py-1 shadow-[4px_4px_0_#000]">
+            <Flame className="h-4 w-4 text-white" />
+            <span className="text-[10px] font-bold text-white" style={{ fontFamily: "'Press Start 2P', monospace" }}>
+              {userStats.currentStreak}
+            </span>
           </div>
         )}
       </header>
 
       {/* Desktop header */}
-      <header className="hidden lg:flex lg:sticky lg:top-0 lg:z-40 lg:h-14 lg:items-center lg:gap-3 lg:border-b lg:bg-background/95 lg:backdrop-blur lg:supports-[backdrop-filter]:bg-background/60 lg:px-6">
+      <header className="hidden lg:flex lg:sticky lg:top-0 lg:z-40 lg:h-14 lg:items-center lg:gap-3 border-b-[4px] border-b-black bg-[#fef3c7] lg:px-6">
         {showBackButton ? (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setView(currentView === 'lesson' ? 'skill-path' : 'dashboard')}
-            className="gap-1.5 text-muted-foreground hover:text-foreground"
+            className="gap-1.5 border-[3px] border-black bg-white shadow-[4px_4px_0_#000] hover:shadow-[2px_2px_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all duration-100 text-black text-[10px] font-bold"
+            style={{ fontFamily: "'Press Start 2P', monospace" }}
           >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Quay lại</span>
+            <ArrowLeft className="h-3 w-3" />
+            <span>QUAY LẠI</span>
           </Button>
         ) : (
           <div />
         )}
-        <h2 className="text-lg font-semibold flex-1">
+        <h2
+          className="text-xs font-bold flex-1 text-black"
+          style={{ fontFamily: "'Press Start 2P', monospace" }}
+        >
           {viewTitles[currentView] ?? 'MindForge'}
         </h2>
 
@@ -87,38 +94,21 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           {userStats && userStats.currentStreak > 0 && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex items-center gap-1.5 rounded-full bg-orange-500/10 px-3 py-1.5 text-sm font-medium text-orange-600 dark:text-orange-400">
-                  <Flame className="h-4 w-4" />
-                  <span>{userStats.currentStreak} ngày</span>
+                <div className="flex items-center gap-1.5 border-[3px] border-black bg-[#f59e0b] px-3 py-1.5 shadow-[4px_4px_0_#000]">
+                  <Flame className="h-4 w-4 text-white" />
+                  <span
+                    className="text-[10px] font-bold text-white"
+                    style={{ fontFamily: "'Press Start 2P', monospace" }}
+                  >
+                    {userStats.currentStreak} NGÀY
+                  </span>
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Chuỗi học tập hiện tại</p>
+                <p className="text-[10px]" style={{ fontFamily: "'Press Start 2P', monospace" }}>Chuỗi học tập hiện tại</p>
               </TooltipContent>
             </Tooltip>
           )}
-
-          {/* Theme toggle */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="h-9 w-9"
-              >
-                {mounted && theme === 'dark' ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-                <span className="sr-only">Đổi giao diện</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{mounted && theme === 'dark' ? 'Chế độ sáng' : 'Chế độ tối'}</p>
-            </TooltipContent>
-          </Tooltip>
         </div>
       </header>
 
@@ -136,12 +126,17 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Footer */}
-        <footer className="border-t mt-auto">
+        <footer className="border-t-[4px] border-t-black mt-auto bg-[#fef3c7]">
           <div className="mx-auto max-w-5xl px-4 py-4 lg:px-8">
-            <p className="text-center text-xs text-muted-foreground italic">
+            <p
+              className="text-center text-[10px] text-black italic"
+            >
               {randomQuote}
             </p>
-            <p className="text-center text-[10px] text-muted-foreground/60 mt-1">
+            <p
+              className="text-center text-[9px] text-black/60 mt-2"
+              style={{ fontFamily: "'Press Start 2P', monospace" }}
+            >
               © 2024 MindForge Academy
             </p>
           </div>
@@ -150,6 +145,3 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     </div>
   )
 }
-
-// Need React import for useState/useEffect
-import React from 'react'

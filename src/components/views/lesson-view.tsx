@@ -7,15 +7,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import {
@@ -93,7 +84,6 @@ export function LessonView() {
     setQuizResults(result)
     setShowQuizResults(true)
 
-    // Save progress
     await saveProgressMutation.mutateAsync({
       lessonId: currentLessonId,
       score: result.score,
@@ -112,8 +102,8 @@ export function LessonView() {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-64 rounded-xl" />
+        <Skeleton className="h-8 w-48 border-4 border-black" />
+        <Skeleton className="h-64 border-4 border-black" />
       </div>
     )
   }
@@ -121,8 +111,14 @@ export function LessonView() {
   if (!skillPath || !module_ || !lesson) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
-        <p className="text-muted-foreground">Không tìm thấy bài học</p>
-        <Button variant="link" onClick={() => setView('dashboard')}>Quay lại</Button>
+        <p className="text-muted-foreground font-bold">Không tìm thấy bài học</p>
+        <Button
+          variant="ghost"
+          onClick={() => setView('dashboard')}
+          className="mt-2 border-4 border-black shadow-[4px_4px_0_#000] hover:shadow-[2px_2px_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-bold"
+        >
+          Quay lại
+        </Button>
       </div>
     )
   }
@@ -133,23 +129,31 @@ export function LessonView() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-        <button onClick={() => setView('dashboard')} className="hover:text-foreground transition-colors">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap font-bold">
+        <button
+          onClick={() => setView('dashboard')}
+          className="hover:text-foreground transition-colors hover:bg-[#fde047] px-1 py-0.5"
+        >
           Dashboard
         </button>
         <ChevronRight className="h-3 w-3" />
-        <button onClick={() => setView('skill-path')} className="hover:text-foreground transition-colors">
+        <button
+          onClick={() => setView('skill-path')}
+          className="hover:text-foreground transition-colors hover:bg-[#fde047] px-1 py-0.5"
+        >
           {skillPath.title}
         </button>
         <ChevronRight className="h-3 w-3" />
-        <span className="text-foreground font-medium truncate">{lesson.title}</span>
+        <span className="text-foreground truncate">{lesson.title}</span>
       </div>
 
       {/* Lesson header */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold sm:text-2xl">{lesson.title}</h1>
+            <h1 className="text-xl font-bold sm:text-2xl" style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '16px' }}>
+              {lesson.title}
+            </h1>
             <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Clock className="h-3.5 w-3.5" />
@@ -160,7 +164,7 @@ export function LessonView() {
                 {lesson.quizzes.length} câu hỏi
               </span>
               {isCompleted && (
-                <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
+                <Badge className="bg-emerald-500 text-white border-3 border-black shadow-[2px_2px_0_#000] px-2 py-0.5 font-bold">
                   <CheckCircle2 className="h-3 w-3 mr-1" />
                   Đã hoàn thành
                 </Badge>
@@ -172,17 +176,15 @@ export function LessonView() {
 
       {/* Lesson content */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-        <Card className="border-0 shadow-sm">
+        <Card className="border-4 border-black shadow-[inset_-4px_-4px_0_#000,inset_4px_4px_0_#fff] bg-[#fef3c7]">
           <CardContent className="p-4 sm:p-6 lg:p-8">
-            <div className="prose prose-sm dark:prose-invert max-w-none
+            <div className="prose prose-sm max-w-none
               prose-headings:font-bold prose-headings:tracking-tight
               prose-h1:text-xl prose-h2:text-lg prose-h3:text-base
               prose-p:leading-relaxed prose-p:text-muted-foreground
               prose-li:text-muted-foreground
               prose-strong:text-foreground
-              prose-code:text-sm prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-              prose-pre:bg-muted prose-pre:rounded-lg
-              prose-blockquote:border-l-amber-500 prose-blockquote:bg-amber-500/5 prose-blockquote:rounded-r-lg prose-blockquote:py-2
+              prose-code:text-sm prose-code:bg-[#fde047] prose-code:px-1.5 prose-code:py-0.5 prose-code:border-2 prose-code:border-black prose-code:inline-block
               prose-table:text-sm
             ">
               <LessonContentRenderer content={lesson.content} />
@@ -193,10 +195,10 @@ export function LessonView() {
 
       {/* Key Takeaways */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-        <Card className="border-0 shadow-sm bg-emerald-500/5 border-l-4 border-l-emerald-500">
+        <Card className="border-4 border-black border-l-8 border-l-[#e11d48] shadow-[inset_-4px_-4px_0_#000,inset_4px_4px_0_#fff]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <CardTitle className="text-base flex items-center gap-2 font-bold" style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '12px' }}>
+              <Sparkles className="h-4 w-4 text-[#e11d48]" />
               Điểm chính cần nhớ
             </CardTitle>
           </CardHeader>
@@ -204,7 +206,7 @@ export function LessonView() {
             <ul className="space-y-2">
               {JSON.parse(lesson.keyTakeaways).map((point: string, i: number) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
-                  <span className="text-emerald-500 mt-0.5">✦</span>
+                  <span className="text-[#e11d48] mt-0.5 font-bold">✦</span>
                   <span>{point}</span>
                 </li>
               ))}
@@ -216,14 +218,14 @@ export function LessonView() {
       {/* Quiz */}
       {lesson.quizzes.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-sm">
+          <Card className="border-4 border-black shadow-[inset_-4px_-4px_0_#000,inset_4px_4px_0_#fff]">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Trophy className="h-4 w-4 text-amber-500" />
+                <CardTitle className="text-base flex items-center gap-2 font-bold" style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '12px' }}>
+                  <Trophy className="h-4 w-4 text-[#f59e0b]" />
                   Kiểm tra kiến thức
                 </CardTitle>
-                <Badge variant="secondary" className="text-xs">
+                <Badge className="bg-[#fef3c7] text-black border-3 border-black shadow-[2px_2px_0_#000] font-bold">
                   {lesson.quizzes.length} câu hỏi
                 </Badge>
               </div>
@@ -231,7 +233,7 @@ export function LessonView() {
             <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0 space-y-4">
               {lesson.quizzes.map((quiz, idx) => (
                 <div key={quiz.id} className="space-y-3">
-                  <p className="text-sm font-medium">
+                  <p className="text-sm font-bold">
                     <span className="text-muted-foreground mr-2">Câu {idx + 1}.</span>
                     {quiz.question}
                   </p>
@@ -245,11 +247,11 @@ export function LessonView() {
                           const result = quizResults.results.find((r) => r.quizId === quiz.id)
                           if (result) {
                             if (result.isCorrect && opt === result.correctAnswer) {
-                              resultClass = 'bg-emerald-500/10 border-emerald-500 text-emerald-700 dark:text-emerald-300'
+                              resultClass = 'bg-emerald-500 text-white border-4 border-black shadow-[2px_2px_0_#000]'
                             } else if (!result.isCorrect && isSelected) {
-                              resultClass = 'bg-destructive/10 border-destructive text-destructive'
+                              resultClass = 'bg-red-500 text-white border-4 border-black shadow-[2px_2px_0_#000]'
                             } else if (opt === result.correctAnswer) {
-                              resultClass = 'bg-emerald-500/10 border-emerald-500/50 text-emerald-600 dark:text-emerald-400'
+                              resultClass = 'bg-emerald-500 text-white border-4 border-black shadow-[2px_2px_0_#000]'
                             }
                           }
                         }
@@ -263,16 +265,16 @@ export function LessonView() {
                               }
                             }}
                             className={cn(
-                              'flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-sm text-left transition-all duration-200',
-                              isSelected && !showQuizResults && 'border-primary bg-primary/5',
-                              !isSelected && !showQuizResults && 'border-border hover:border-primary/30 hover:bg-muted/50',
+                              'flex w-full items-center gap-3 border-4 border-black px-3 py-2.5 text-sm text-left transition-all duration-200 shadow-[2px_2px_0_#000]',
+                              isSelected && !showQuizResults && 'bg-[#e11d48] text-white border-4 border-black shadow-[2px_2px_0_#000]',
+                              !isSelected && !showQuizResults && 'bg-white hover:bg-[#fde047] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#000]',
                               resultClass
                             )}
                           >
                             <span className={cn(
-                              'flex h-6 w-6 items-center justify-center rounded-full border text-xs font-medium shrink-0',
-                              isSelected && !showQuizResults && 'border-primary bg-primary text-primary-foreground',
-                              !isSelected && !showQuizResults && 'border-border text-muted-foreground'
+                              'flex h-6 w-6 items-center justify-center border-2 border-black text-xs font-bold shrink-0',
+                              isSelected && !showQuizResults && 'bg-white text-black',
+                              !isSelected && !showQuizResults && 'bg-white text-muted-foreground'
                             )}>
                               {String.fromCharCode(65 + optIdx)}
                             </span>
@@ -287,10 +289,10 @@ export function LessonView() {
                     const result = quizResults.results.find((r) => r.quizId === quiz.id)
                     return result ? (
                       <div className={cn(
-                        'rounded-lg p-3 text-sm',
-                        result.isCorrect ? 'bg-emerald-500/5 text-emerald-700 dark:text-emerald-300' : 'bg-amber-500/5 text-amber-700 dark:text-amber-300'
+                        'border-4 border-black p-3 text-sm',
+                        result.isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
                       )}>
-                        <p className="font-medium mb-1">
+                        <p className="font-bold mb-1">
                           {result.isCorrect ? '✅ Chính xác!' : '💡 Chưa chính xác'}
                         </p>
                         <p>{result.explanation}</p>
@@ -298,16 +300,16 @@ export function LessonView() {
                     ) : null
                   })()}
 
-                  {idx < lesson.quizzes.length - 1 && <Separator />}
+                  {idx < lesson.quizzes.length - 1 && <Separator className="bg-black h-px" />}
                 </div>
               ))}
 
-              <div className="flex items-center gap-3 pt-2">
+              <div className="flex items-center gap-3 pt-2 flex-wrap">
                 {!showQuizResults ? (
                   <Button
                     onClick={handleSubmitQuiz}
                     disabled={submitQuizMutation.isPending || Object.keys(quizAnswers).length < lesson.quizzes.length}
-                    className="gap-2"
+                    className="gap-2 bg-[#e11d48] text-white border-4 border-black shadow-[4px_4px_0_#000] hover:shadow-[2px_2px_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-bold disabled:opacity-50 disabled:hover:shadow-[4px_4px_0_#000] disabled:hover:translate-x-0 disabled:hover:translate-y-0"
                   >
                     <Trophy className="h-4 w-4" />
                     Nộp bài ({Object.keys(quizAnswers).length}/{lesson.quizzes.length})
@@ -316,17 +318,22 @@ export function LessonView() {
                   <>
                     {quizResults && (
                       <div className="flex items-center gap-3 mr-auto">
-                        <Badge variant={quizResults.score >= 70 ? 'default' : 'secondary'} className={cn(
-                          quizResults.score >= 70 ? 'bg-emerald-500' : ''
+                        <Badge className={cn(
+                          'border-3 border-black shadow-[2px_2px_0_#000] font-bold',
+                          quizResults.score >= 70 ? 'bg-emerald-500 text-white' : 'bg-[#fef3c7] text-black'
                         )}>
                           {quizResults.score} điểm
                         </Badge>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-sm text-muted-foreground font-bold">
                           {quizResults.correctCount}/{quizResults.totalQuestions} đúng • +{quizResults.xpEarned} XP
                         </span>
                       </div>
                     )}
-                    <Button variant="outline" onClick={resetQuiz} className="gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={resetQuiz}
+                      className="gap-2 bg-[#fef3c7] border-4 border-black shadow-[4px_4px_0_#000] hover:shadow-[2px_2px_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-bold"
+                    >
                       <RotateCcw className="h-3.5 w-3.5" />
                       Làm lại
                     </Button>
@@ -341,7 +348,8 @@ export function LessonView() {
       {/* Next lesson navigation */}
       {nextLesson && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-          <Card className="border-0 shadow-sm cursor-pointer hover:shadow-md transition-all duration-200"
+          <Card
+            className="border-4 border-black shadow-[4px_4px_0_#000] cursor-pointer hover:shadow-[2px_2px_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200"
             onClick={() => {
               if (currentSkillPathId && currentModuleId && nextLesson) {
                 useAppStore.getState().navigateToLesson(currentSkillPathId, currentModuleId, nextLesson.id)
@@ -352,8 +360,8 @@ export function LessonView() {
               <div className="flex items-center gap-3">
                 <BookOpen className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Bài tiếp theo</p>
-                  <p className="text-sm font-semibold">{nextLesson.title}</p>
+                  <p className="text-xs text-muted-foreground font-bold">Bài tiếp theo</p>
+                  <p className="text-sm font-bold">{nextLesson.title}</p>
                 </div>
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -365,7 +373,7 @@ export function LessonView() {
   )
 }
 
-// Simple markdown-like renderer
+// Simple markdown-like renderer with neo-brutalist styling
 function LessonContentRenderer({ content }: { content: string }) {
   const lines = content.split('\n')
   const elements: React.ReactNode[] = []
@@ -381,7 +389,7 @@ function LessonContentRenderer({ content }: { content: string }) {
     if (line.startsWith('```')) {
       if (inCodeBlock) {
         elements.push(
-          <pre key={`code-${i}`} className="bg-muted rounded-lg p-4 overflow-x-auto text-xs">
+          <pre key={`code-${i}`} className="border-4 border-black bg-[#1a1a2e] text-[#fef3c7] p-4 overflow-x-auto text-xs">
             <code>{codeContent.trim()}</code>
           </pre>
         )
@@ -431,7 +439,11 @@ function LessonContentRenderer({ content }: { content: string }) {
     if (line.startsWith('> ')) {
       if (inList) { elements.push(<ul key={`ul-end-${i}`} />); inList = false }
       if (inOrderedList) { elements.push(<ol key={`ol-end-${i}`} />); inOrderedList = false }
-      elements.push(<blockquote key={i}>{line.slice(2)}</blockquote>)
+      elements.push(
+        <blockquote key={i} className="border-l-8 border-l-[#f59e0b] bg-[#fef9c3] border-4 border-black py-2 px-4 my-2 font-medium">
+          {line.slice(2)}
+        </blockquote>
+      )
       continue
     }
 
@@ -466,7 +478,7 @@ function LessonContentRenderer({ content }: { content: string }) {
 
     // Table rows
     if (line.startsWith('|') && line.endsWith('|')) {
-      if (line.match(/^\|[\s-|]+\|$/)) continue // separator row
+      if (line.match(/^\|[\s-|]+\|$/)) continue
       const cells = line.split('|').filter(c => c.trim()).map(c => c.trim())
       if (!inList && !inOrderedList) {
         elements.push(
@@ -475,7 +487,7 @@ function LessonContentRenderer({ content }: { content: string }) {
               <tbody>
                 <tr>
                   {cells.map((cell, ci) => (
-                    <td key={ci} className="border px-3 py-2 text-sm" dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(cell) }} />
+                    <td key={ci} className="border-2 border-black px-3 py-2 text-sm" dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(cell) }} />
                   ))}
                 </tr>
               </tbody>

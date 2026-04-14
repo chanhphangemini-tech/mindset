@@ -79,57 +79,76 @@ export function NotesView() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl flex items-center gap-2">
-            <StickyNote className="h-7 w-7 text-emerald-500" />
+          <h1
+            className="text-lg font-bold tracking-tight sm:text-xl flex items-center gap-2"
+            style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '14px' }}
+          >
+            <StickyNote className="h-6 w-6 text-emerald-600" />
             Ghi chú
           </h1>
-          <p className="mt-1 text-muted-foreground">
+          <p className="mt-1 text-muted-foreground text-xs">
             Quản lý ghi chú học tập của bạn
           </p>
         </div>
 
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2 shrink-0">
+            <button
+              className="gap-2 shrink-0 flex items-center bg-[#e11d48] text-white border-4 border-black shadow-[4px_4px_0_#000] px-4 py-2 text-xs font-bold hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000] transition-all duration-150"
+              style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '10px' }}
+            >
               <Plus className="h-4 w-4" />
               <span className="hidden sm:inline">Tạo ghi chú</span>
               <span className="sm:hidden">Tạo mới</span>
-            </Button>
+            </button>
           </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Tạo ghi chú mới</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 pt-2">
-              <div className="space-y-2">
-                <Label htmlFor="note-title">Tiêu đề</Label>
-                <Input
-                  id="note-title"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="Nhập tiêu đề..."
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="note-content">Nội dung</Label>
-                <Textarea
-                  id="note-content"
-                  value={newContent}
-                  onChange={(e) => setNewContent(e.target.value)}
-                  placeholder="Nhập nội dung ghi chú..."
-                  rows={6}
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setCreateOpen(false)}>
-                  Hủy
-                </Button>
-                <Button
-                  onClick={handleCreate}
-                  disabled={!newTitle.trim() || !newContent.trim() || createMutation.isPending}
+          <DialogContent className="border-4 border-black bg-[#fef3c7] shadow-[8px_8px_0_#000] p-0">
+            <div className="p-6">
+              <DialogHeader>
+                <DialogTitle
+                  className="text-base font-bold"
+                  style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '11px' }}
                 >
-                  {createMutation.isPending ? 'Đang tạo...' : 'Tạo ghi chú'}
-                </Button>
+                  Tạo ghi chú mới
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="note-title" className="text-xs font-bold">Tiêu đề</Label>
+                  <Input
+                    id="note-title"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    placeholder="Nhập tiêu đề..."
+                    className="border-4 border-black bg-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="note-content" className="text-xs font-bold">Nội dung</Label>
+                  <Textarea
+                    id="note-content"
+                    value={newContent}
+                    onChange={(e) => setNewContent(e.target.value)}
+                    placeholder="Nhập nội dung ghi chú..."
+                    rows={6}
+                    className="border-4 border-black bg-white"
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    onClick={() => setCreateOpen(false)}
+                    className="border-4 border-black bg-[#fef3c7] shadow-[4px_4px_0_#000] px-4 py-2 text-xs font-bold hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000] transition-all duration-150"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    onClick={handleCreate}
+                    disabled={!newTitle.trim() || !newContent.trim() || createMutation.isPending}
+                    className="bg-[#e11d48] text-white border-4 border-black shadow-[4px_4px_0_#000] px-4 py-2 text-xs font-bold hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_#000]"
+                  >
+                    {createMutation.isPending ? 'Đang tạo...' : 'Tạo ghi chú'}
+                  </button>
+                </div>
               </div>
             </div>
           </DialogContent>
@@ -143,7 +162,7 @@ export function NotesView() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Tìm kiếm ghi chú..."
-          className="pl-10"
+          className="pl-10 border-4 border-black bg-white shadow-[inset_-3px_-3px_0_#000,inset_3px_3px_0_rgba(0,0,0,0.08)]"
         />
       </div>
 
@@ -151,7 +170,7 @@ export function NotesView() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-32 rounded-xl" />
+            <Skeleton key={i} className="h-32 border-4 border-black" />
           ))}
         </div>
       ) : filteredNotes && filteredNotes.length > 0 ? (
@@ -165,38 +184,36 @@ export function NotesView() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ delay: i * 0.03 }}
               >
-                <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-200 group">
+                <Card className="border-4 border-black shadow-[inset_-4px_-4px_0_#000,inset_4px_4px_0_#fff] bg-[#fef3c7] hover:shadow-[inset_-6px_-6px_0_#000,inset_6px_6px_0_#fff] transition-all duration-200 group">
                   <CardContent className="p-4 sm:p-5">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 shrink-0 mt-0.5">
-                        <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                      <div className="flex h-9 w-9 items-center justify-center border-3 border-black bg-emerald-100 shrink-0 mt-0.5">
+                        <FileText className="h-4 w-4 text-emerald-700" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-sm">{note.title}</h3>
+                        <h3 className="font-bold text-sm">{note.title}</h3>
                         <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                           {note.content}
                         </p>
                         <div className="flex items-center gap-3 mt-2">
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <span className="text-xs text-muted-foreground flex items-center gap-1 border-3 border-black bg-white px-2 py-0.5 font-bold">
                             <Calendar className="h-3 w-3" />
                             {new Date(note.updatedAt).toLocaleDateString('vi-VN')}
                           </span>
                           {note.lessonId && (
-                            <Badge variant="secondary" className="text-[10px]">
+                            <span className="text-[10px] border-3 border-black shadow-[2px_2px_0_#000] bg-[#fef3c7] px-2 py-0.5 font-bold">
                               Đã liên kết bài học
-                            </Badge>
+                            </span>
                           )}
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                      <button
+                        className="h-8 w-8 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-700 flex items-center justify-center border-3 border-transparent hover:border-black"
                         onClick={() => deleteMutation.mutate(note.id)}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         <span className="sr-only">Xóa</span>
-                      </Button>
+                      </button>
                     </div>
                   </CardContent>
                 </Card>
@@ -210,22 +227,28 @@ export function NotesView() {
           animate={{ opacity: 1 }}
           className="flex flex-col items-center justify-center py-16 text-center"
         >
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-3xl mb-4">
+          <div className="flex h-16 w-16 items-center justify-center border-4 border-black bg-[#fef3c7] shadow-[inset_-4px_-4px_0_#000,inset_4px_4px_0_#fff] text-3xl mb-4">
             📝
           </div>
-          <h3 className="font-semibold text-lg">
+          <h3
+            className="font-bold text-base"
+            style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '11px' }}
+          >
             {searchTerm ? 'Không tìm thấy ghi chú' : 'Chưa có ghi chú nào'}
           </h3>
-          <p className="text-sm text-muted-foreground mt-1 max-w-sm">
+          <p className="text-sm text-muted-foreground mt-2 max-w-sm">
             {searchTerm
               ? 'Thử tìm kiếm với từ khóa khác'
               : 'Tạo ghi chú đầu tiên để ghi lại những kiến thức quan trọng'}
           </p>
           {!searchTerm && (
-            <Button onClick={() => setCreateOpen(true)} className="mt-4 gap-2">
+            <button
+              onClick={() => setCreateOpen(true)}
+              className="mt-4 gap-2 flex items-center bg-[#e11d48] text-white border-4 border-black shadow-[4px_4px_0_#000] px-4 py-2 text-xs font-bold hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000] transition-all duration-150"
+            >
               <Plus className="h-4 w-4" />
               Tạo ghi chú
-            </Button>
+            </button>
           )}
         </motion.div>
       )}
